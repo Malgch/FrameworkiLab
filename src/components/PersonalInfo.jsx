@@ -2,20 +2,19 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import RatingBar from "./RatingBar";
+import { useContext } from 'react';
+import AppContext from '../data/AppContext';
+import { redirect } from 'react-router-dom';
 
 
-function PersonInfo ({id, name, birth, eyes, rating, dispatch}) {
+function PersonInfo ({id, name, birth, eyes, rating}) {
 
-
+  const dispatch = useContext(AppContext).dispatch;
+  
   const handleDetails = () => {alert(`Details person with ID: ${id}`);}
-  const handleEdit = () => {
-    const newName = prompt("Enter new name:", name);
-    if (newName && newName !== name) {
-      dispatch({type: "edit", id: id, newName: newName});
-    }
-  }
+  //const handleEdit = () => {  };
   const handleDelete = () => {dispatch({type: "delete", id: id }); }
-  const handleRate = () => { dispatch({ type: "rate", id: id, rating:rating });};
+  const handleRate = () => { dispatch({ type: "rate", id: id, rating:(parseInt(rating)+1)%11 });};
 
     return (
       <Card style={{ width: '18rem' }}>
@@ -29,7 +28,7 @@ function PersonInfo ({id, name, birth, eyes, rating, dispatch}) {
       </ListGroup>
       <div className="d-flex justify-content-between mt-3">
           <Button variant="primary" onClick = {handleDetails}>Details</Button>
-          <Button variant="primary" onClick={handleEdit}>Edit</Button>
+          <Button variant="primary" onClick={e => redirect("/lab4/edit")}>Edit</Button>
           <Button variant="danger" onClick={handleDelete}>Delete</Button>
           <Button variant="secondary" onClick={handleRate}>Rate</Button>
         </div>

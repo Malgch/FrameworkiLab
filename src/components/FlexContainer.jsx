@@ -4,9 +4,13 @@ import { useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { Container } from 'react-bootstrap';
 import React from 'react';
+import { useContext } from 'react';
+import AppContext from '../data/AppContext';
 
-const FlexContainer = ({element, data}) => {
-    const [items, dispatch] = useReducer(AppReducer, data);
+const FlexContainer = ({element}) => {
+    // const [items, dispatch] = useReducer(AppReducer, data);
+    const context = useContext(AppContext)
+    const items = context.items;
     return (
       <Container>
         <div className="d-flex flex-wrap justify-content-start">
