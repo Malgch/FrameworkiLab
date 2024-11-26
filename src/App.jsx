@@ -22,29 +22,23 @@ const menuItems = [
   { id: 5, label: 'Laboratorium 4', url: '/lab4/', urlPattern: '/lab4/', element: <Lab4Page /> }
 ];
 
-
 function App() {
   const [count, setCount] = useState(0)
 
   const[state, appDispatch] = useReducer(AppReducer, data);
-
   return (
     <>
     <AppContext.Provider value={{items: state, dispatch: appDispatch}}>
       <RootLayout items={menuItems}>
           <Routes>
           {menuItems.map((item) => (
-          <Route key={item.id} path={item.urlPattern} element={item.element} />
+          <Route key={item.id} path={item.urlPattern} element={item.element} />   
         ))}
         <Route path="*" element={<NotFoundPage />} />
-        <Route path='/lab4/edit' element={<EditForm/>}/>
+        <Route path="/lab4/edit/:id" element={<EditForm />} />
           <Route path='/lab4/add' element={<CreateForm/>}/>
           </Routes>
-          {/* <Route path='/lab4' element={<Lab4Page/>}/> */}
           
-          {/* <SimpleLayout>
-              <p>content</p>
-          </SimpleLayout> */}
       </RootLayout>
       </AppContext.Provider>
     </>

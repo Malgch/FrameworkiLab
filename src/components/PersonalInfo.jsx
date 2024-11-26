@@ -4,17 +4,20 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import RatingBar from "./RatingBar";
 import { useContext } from 'react';
 import AppContext from '../data/AppContext';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 function PersonInfo ({id, name, birth, eyes, rating}) {
 
-  const dispatch = useContext(AppContext).dispatch;
+  const navigate = useNavigate();
+ 
+  const context = useContext(AppContext);
+  const dispatch = context.dispatch;
   
   const handleDetails = () => {alert(`Details person with ID: ${id}`);}
-  //const handleEdit = () => {  };
+  const handleEdit = () => { navigate(`/lab4/edit/${id}`); };
   const handleDelete = () => {dispatch({type: "delete", id: id }); }
-  const handleRate = () => { dispatch({ type: "rate", id: id, rating:(parseInt(rating)+1)%11 });};
+  const handleRate = () => {dispatch({ type: "rate", id});};
 
     return (
       <Card style={{ width: '18rem' }}>
@@ -28,7 +31,7 @@ function PersonInfo ({id, name, birth, eyes, rating}) {
       </ListGroup>
       <div className="d-flex justify-content-between mt-3">
           <Button variant="primary" onClick = {handleDetails}>Details</Button>
-          <Button variant="primary" onClick={e => redirect("/lab4/edit")}>Edit</Button>
+          <Button variant="primary" onClick={handleEdit}>Edit</Button>
           <Button variant="danger" onClick={handleDelete}>Delete</Button>
           <Button variant="secondary" onClick={handleRate}>Rate</Button>
         </div>
