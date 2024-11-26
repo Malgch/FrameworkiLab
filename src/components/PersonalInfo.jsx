@@ -2,20 +2,22 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import RatingBar from "./RatingBar";
+import { useContext } from 'react';
+import AppContext from '../data/AppContext';
+import { useNavigate } from 'react-router-dom';
 
 
-function PersonInfo ({id, name, birth, eyes, rating, dispatch}) {
+function PersonInfo ({id, name, birth, eyes, rating}) {
 
-
+  const navigate = useNavigate();
+ 
+  const context = useContext(AppContext);
+  const dispatch = context.dispatch;
+  
   const handleDetails = () => {alert(`Details person with ID: ${id}`);}
-  const handleEdit = () => {
-    const newName = prompt("Enter new name:", name);
-    if (newName && newName !== name) {
-      dispatch({type: "edit", id: id, newName: newName});
-    }
-  }
+  const handleEdit = () => { navigate(`/lab4/edit/${id}`); };
   const handleDelete = () => {dispatch({type: "delete", id: id }); }
-  const handleRate = () => { dispatch({ type: "rate", id: id, rating:rating });};
+  const handleRate = () => {dispatch({ type: "rate", id});};
 
     return (
       <Card style={{ width: '18rem' }}>
