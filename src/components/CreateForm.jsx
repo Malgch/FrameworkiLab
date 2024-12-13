@@ -1,12 +1,18 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useMemo } from "react";
 import AppContext from "../data/AppContext";
 
 function CreateForm() {
     const [errors, setErrors] = useState([]); //stan komunikatów błędów
     const[isSending, setSending] = useState(false); //sygnalizator wysyłania
-    const dispatch = useContext(AppContext).dispatch;
+    const {items, dispatch} = useContext(AppContext);
 
-    const id = Math.floor(Math.random() * 100000);
+    const newId = useMemo(() => {
+        if (!Array.isArray(items) || items.length === 0 ) return 1; {
+        const maxId = Math.max(...items.map(user => user.id));
+        return maxId +1;
+        }
+    }, [items])
+    
 
     const onSubmit = async e => {
         e.preventDefault();
@@ -14,10 +20,10 @@ function CreateForm() {
         const data = new FormData(e.target); 
 
         const username = data.get("username").trim();
-        const surname = data.get("surname").trim();
-        const email = data.get("email").trim();
-        const passwordField = data.get("passwordField").trim();
-        const confirmPassword = data.get("confirmPassword").trim();
+        const birthDate = data.get("birthDate").trim();
+        const eyes = data.get("eyes").trim();
+        const rating = data.get("rating").trim();
+
 
         console.log(errors);
 
@@ -25,21 +31,22 @@ function CreateForm() {
             err.push("Imię musi zaczynać się wielką literą.");
         }
 
-        if(!surname || surname[0] !== surname[0].toUpperCase()){
-            err.push("Nazwisko musi zaczynać się wielką literą");
+        if(username.length < 3){
+            err.push("Imię musi być dłuższe niż 3 znaki.");
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            err.push("Podaj poprawny adres e-mail.");
+        var format = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
+        if(format.test(username)){
+            err.push("Imię nie może zawierać znaków specjalnych")
         }
 
-        if (passwordField.length < 3) {
-            err.push("Hasło musi zawierać co najmniej 3 znaki");
+        if(isNaN(rating)){
+            err.push("Rating musi być liczbą")
         }
 
-        if (passwordField !== confirmPassword) {
-            err.push("Hasła muszą się zgadzać.");
+        const today = new Date();
+        if (new Date(birthDate) > today) {
+            err.push("Data urodzenia nie może być w przyszłości");
         }
 
         if(err.length != 0) {
@@ -51,21 +58,20 @@ function CreateForm() {
         // dane formularza są poprawne, wysyłamy lub przekazujemy do dispatch
         setErrors([]);
         setSending(true);
-
+        alert("Dodano nowego użytkownika");
 
         await new Promise(res => setTimeout(res, 1000)); //symulacja fetch
 
         dispatch({
             type: "add",
             data: {
-                id,
+                id: newId,
                 username,
-                surname,
-                email,
-                password: passwordField,
+                birthDate,
+                eyes,
+                rating,
             },
         });
-
 
         setSending(false);
 
@@ -90,22 +96,27 @@ function CreateForm() {
         <form onSubmit={onSubmit}>
             <h2>Formularz</h2>
             <label htmlFor="id">Id</label><br/>
-            <input name="id" value={id} readOnly/><br/>
+            <input name="id" value={newId} readOnly/><br/>
 
             <label htmlFor="username">Imię</label><br/>
             <input name="username" required minLength="1" maxLength="20" placeholder="Imię"/><br/>
 
-            <label htmlFor="surname">Nazwisko</label><br/>
-            <input name="surname" required minLength="1" maxLength="20"/><br/>
+            <label htmlFor="birthDate">Data urodzenia</label><br/>
+            <input name="birthDate" type="date" required /><br/>
 
-            <label htmlFor="email">E-mail</label><br/>
-            <input name="email" type="email" required placeholder="john@doe.com" /><br/>
+            <label htmlFor="eyes">Oczy</label><br/>
+            <select name="eyes"  required><br/>
+                <option value="blue">Blue</option>
+                <option value="green">Green</option>
+                <option value="brown">Brown</option>
+                <option value="grey">Grey</option>
+                <option value="black">Black</option>
+                <option value="amber">Amber</option>
+                </select><br/>
 
-            <label htmlFor="passwordField">Hasło</label><br/>
-            <input name="passwordField" type="password" required /><br/>
+            <label htmlFor="rating">Rating</label><br/>
+            <input name="rating" type="number" min="0" max="10" required /><br/>
 
-            <label htmlFor="confirmPassword">Potwierdź hasło</label><br/>
-            <input name="confirmPassword" type="password" required /><br/>
 
             <button disabled={isSending} type="submit">Save</button>
         </form>

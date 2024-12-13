@@ -1,8 +1,11 @@
 
 export default function AppReducer(state, action) {
+    if (!Array.isArray(state)) {
+        state = Object.values(state); // Normalize into an array
+    }
     switch (action.type) {
-        case "edit":{
-            console.log("Updated Fields:", action.updatedFields);
+        case "edit": {
+            console.log("Reducer Edit action", state)
             return state.map((item) =>
                 item.id === action.id
                     ? { ...item, ...action.updatedFields }
@@ -17,16 +20,21 @@ export default function AppReducer(state, action) {
             );
         }
         case "select": {
+            console.log("selected user in reducer", action.id);
             return {
                 ...state,
-                selectedId: action.id,
+                select: action.id,
             };
         }
-        case "delete":
-            return state.filter(person => person.id !== action.id);
-
+        case "delete": {
+            return state.filter((item) => item.id !== action.id);
+        }
+        case "add": {
+            console.log("Reducer action added user", action.data);
+            return [...state, action.data]; 
+        }
         default:
-            return state; 
+            return state;
     }
 }
 
